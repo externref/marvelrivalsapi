@@ -1,0 +1,71 @@
+site_name: MarvelRivalsAPI
+repo_url: https://github.com/externref/marvelrivalsapi
+site_description: Opinionated python API Wrapper for the Unofficial Marvel Rivals API.
+site_author: externref
+copyright: Copyright sarthhh ( 2025 - present )
+site_url: https://externref.github.io/marvelrivalsapi
+
+nav: 
+  - Home: index.md
+  - Getting Started: tutorial.md
+  - API Reference:
+    - Client: api/client.md
+    - Heroes: api/heroes.md
+    - Utility: api/utility.md
+
+theme:
+  name: "material"
+  logo: assets/api_logo.png
+  favicon: assets/api_logo.png
+  font:
+    text: Ubuntu
+  features:
+    - content.tabs.link
+    - navigation.instant
+    - navigation.tracking
+    - navigation.top
+    - content.code.annotate
+  palette:
+    - scheme: light
+      toggle:
+        icon: material/weather-sunny
+        name: Light Mode
+    - scheme: slate
+      toggle:
+        icon: material/weather-night
+        name: Dark Mode
+
+plugins:
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            docstring_style: numpy
+            merge_init_into_class: false
+            inherited_members: true
+          inventories:
+            - https://docs.python.org/3.9/objects.inv
+  - search
+  - social:
+      cards_layout_options:
+        background_color: "#3761A3"
+        color: "#FFFFFF"
+        layout: "default"
+  
+markdown_extensions:
+  - admonition
+  - attr_list
+  - md_in_html
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - pymdownx.details
+  - pymdownx.superfences
+extra_css:
+  - styles.css

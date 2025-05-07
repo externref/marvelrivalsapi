@@ -1,8 +1,5 @@
-<div align="center">
-    # MarvelRivalsAPI
-</div>
-
-![Banner Image](docs/assets/banner.jpeg ){ loading=lazy }
+# MarvelRivalsAPI
+![Banner Image](assets/banner.jpeg ){ loading=lazy }
 
 Opinionated python API Wrapper for the Unofficial [Marvel Rivals API](https://marvelrivalsapi.com).
 
@@ -11,7 +8,7 @@ Opinionated python API Wrapper for the Unofficial [Marvel Rivals API](https://ma
     Use `git+https://github.com/externref/marvelrivals` as the package name to install from source.
 
 #### GET STARTED
-Read the elaborate [tutorial](docs/tutorial.md) to start developing with `marvelrivalsapi`
+Read the elaborate [tutorial](./tutorial.md) to start developing with `marvelrivalsapi`
 
 ### Features
  
