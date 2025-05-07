@@ -1,8 +1,9 @@
 <div align="center">
-    # MarvelRivalsAPI
+# MarvelRivalsAPI
 </div>
 
-![Banner Image](docs/assets/banner.jpeg ){ loading=lazy }
+
+![Banner Image](docs/assets/banner.jpeg )
 
 Opinionated python API Wrapper for the Unofficial [Marvel Rivals API](https://marvelrivalsapi.com).
 
