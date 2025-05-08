@@ -12,9 +12,13 @@
         <meta name="author" content="externref">
       
       
-        <link rel="canonical" href="https://externref.github.io/marvelrivalsapi/api/player/">
+        <link rel="canonical" href="https://externref.github.io/marvelrivalsapi/api/players/">
       
       
+        <link rel="prev" href="../heroes/">
+      
+      
+        <link rel="next" href="../utility/">
       
       
       <link rel="icon" href="../../assets/api_logo.png">
@@ -22,7 +26,7 @@
     
     
       
-        <title>Player - MarvelRivalsAPI</title>
+        <title>Players - MarvelRivalsAPI</title>
       
     
     
@@ -61,11 +65,11 @@
       
         <meta  property="og:type"  content="website" >
       
-        <meta  property="og:title"  content="Player - MarvelRivalsAPI" >
+        <meta  property="og:title"  content="Players - MarvelRivalsAPI" >
       
         <meta  property="og:description"  content="Opinionated python API Wrapper for the Unofficial Marvel Rivals API." >
       
-        <meta  property="og:image"  content="https://externref.github.io/marvelrivalsapi/assets/images/social/api/player.png" >
+        <meta  property="og:image"  content="https://externref.github.io/marvelrivalsapi/assets/images/social/api/players.png" >
       
         <meta  property="og:image:type"  content="image/png" >
       
@@ -73,15 +77,15 @@
       
         <meta  property="og:image:height"  content="630" >
       
-        <meta  property="og:url"  content="https://externref.github.io/marvelrivalsapi/api/player/" >
+        <meta  property="og:url"  content="https://externref.github.io/marvelrivalsapi/api/players/" >
       
         <meta  name="twitter:card"  content="summary_large_image" >
       
-        <meta  name="twitter:title"  content="Player - MarvelRivalsAPI" >
+        <meta  name="twitter:title"  content="Players - MarvelRivalsAPI" >
       
         <meta  name="twitter:description"  content="Opinionated python API Wrapper for the Unofficial Marvel Rivals API." >
       
-        <meta  name="twitter:image"  content="https://externref.github.io/marvelrivalsapi/assets/images/social/api/player.png" >
+        <meta  name="twitter:image"  content="https://externref.github.io/marvelrivalsapi/assets/images/social/api/players.png" >
       
     
     
@@ -139,7 +143,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Player
+              Players
             
           </span>
         </div>
@@ -325,18 +329,20 @@
       
   
   
+    
   
   
+  
     
     
     
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
         
           
           <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
@@ -352,7 +358,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_3">
             <span class="md-nav__icon md-icon"></span>
             API Reference
@@ -409,10 +415,30 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../players.md" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    Players
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -423,6 +449,132 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#marvelrivalsapi.models.PlayerInfo" class="md-nav__link">
+    <span class="md-ellipsis">
+      PlayerInfo
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#marvelrivalsapi.models.PlayerInfo.platform" class="md-nav__link">
+    <span class="md-ellipsis">
+      platform
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#marvelrivalsapi.models.PlayerInfo.from_dict" class="md-nav__link">
+    <span class="md-ellipsis">
+      from_dict
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#marvelrivalsapi.models.LeaderboardPlayer" class="md-nav__link">
+    <span class="md-ellipsis">
+      LeaderboardPlayer
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#marvelrivalsapi.models.LeaderboardPlayer.avg_assists" class="md-nav__link">
+    <span class="md-ellipsis">
+      avg_assists
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#marvelrivalsapi.models.LeaderboardPlayer.avg_deaths" class="md-nav__link">
+    <span class="md-ellipsis">
+      avg_deaths
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#marvelrivalsapi.models.LeaderboardPlayer.avg_hero_damage" class="md-nav__link">
+    <span class="md-ellipsis">
+      avg_hero_damage
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#marvelrivalsapi.models.LeaderboardPlayer.avg_kills" class="md-nav__link">
+    <span class="md-ellipsis">
+      avg_kills
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#marvelrivalsapi.models.LeaderboardPlayer.kda" class="md-nav__link">
+    <span class="md-ellipsis">
+      kda
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#marvelrivalsapi.models.LeaderboardPlayer.mvp_rate" class="md-nav__link">
+    <span class="md-ellipsis">
+      mvp_rate
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#marvelrivalsapi.models.LeaderboardPlayer.win_rate" class="md-nav__link">
+    <span class="md-ellipsis">
+      win_rate
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#marvelrivalsapi.models.LeaderboardPlayer.from_dict" class="md-nav__link">
+    <span class="md-ellipsis">
+      from_dict
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -609,7 +761,7 @@
   
 
 
-  <h1>Player</h1>
+  <h1>Players</h1>
 
 <p>Classes related to player data in the API.</p>
 
