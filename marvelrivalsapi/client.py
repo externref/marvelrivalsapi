@@ -60,7 +60,7 @@ class MarvelRivalsClient:
     def __attrs_post_init__(self) -> None:
         self.client = httpx.Client(headers={"x-api-key": self.api_key})
 
-    def throw(self, res: httpx.Response) -> None:
+    def throw(self, res: httpx.Response) -> typing.NoReturn:
         raise MarvelRivalsAPIError(res)
 
     @typing.overload

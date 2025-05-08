@@ -540,7 +540,7 @@ class PlayerInfo(Model):
             "2": "PS",
             "3": "XBOX",
         }
-        return LoginOS(platforms.get(self.login_os, 1))
+        return LoginOS(int(platforms.get(self.login_os, 1)))
 
 
 @define(kw_only=True)
