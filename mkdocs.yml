@@ -11,6 +11,7 @@ nav:
   - API Reference:
     - Client: api/client.md
     - Heroes: api/heroes.md
+    - Players: api/players.md
     - Utility: api/utility.md
 
 theme:
@@ -48,9 +49,9 @@ plugins:
   - search
   - social:
       cards_layout_options:
-        background_color: "#3761A3"
-        color: "#FFFFFF"
-        layout: "default"
+        background_color: "#FFEA00"
+        color: "#000000"
+        layout: "default/variant"
   
 markdown_extensions:
   - admonition
