@@ -2,22 +2,26 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://externref.github.io/marvelrivalsapi/</loc>
-         <lastmod>2025-05-07</lastmod>
+         <lastmod>2025-05-08</lastmod>
     </url>
     <url>
          <loc>https://externref.github.io/marvelrivalsapi/tutorial/</loc>
-         <lastmod>2025-05-07</lastmod>
+         <lastmod>2025-05-08</lastmod>
     </url>
     <url>
          <loc>https://externref.github.io/marvelrivalsapi/api/client/</loc>
-         <lastmod>2025-05-07</lastmod>
+         <lastmod>2025-05-08</lastmod>
     </url>
     <url>
          <loc>https://externref.github.io/marvelrivalsapi/api/heroes/</loc>
-         <lastmod>2025-05-07</lastmod>
+         <lastmod>2025-05-08</lastmod>
+    </url>
+    <url>
+         <loc>https://externref.github.io/marvelrivalsapi/api/player/</loc>
+         <lastmod>2025-05-08</lastmod>
     </url>
     <url>
          <loc>https://externref.github.io/marvelrivalsapi/api/utility/</loc>
-         <lastmod>2025-05-07</lastmod>
+         <lastmod>2025-05-08</lastmod>
     </url>
 </urlset>
