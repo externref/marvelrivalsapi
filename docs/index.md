@@ -19,10 +19,10 @@ Read the elaborate [tutorial](./tutorial.md) to start developing with `marvelriv
 ### Coverage
 - [x] All Heroes
 - [x] Get Hero
-- [ ] Hero Stats
-- [ ] Hero Leaderboard
-- [ ] All Costumes
-- [ ] Get Costume
+- [x] Hero Stats
+- [x] Hero Leaderboard
+- [x] All Costumes
+- [x] Get Costume
 - [ ] Items
 - [ ] Maps
 - [ ] Dynamic Stat data

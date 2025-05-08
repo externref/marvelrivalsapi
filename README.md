@@ -23,10 +23,10 @@ Read the elaborate [tutorial](docs/tutorial.md) to start developing with `marvel
 ### Coverage
 - [x] All Heroes
 - [x] Get Hero
-- [ ] Hero Stats
-- [ ] Hero Leaderboard
-- [ ] All Costumes
-- [ ] Get Costume
+- [x] Hero Stats
+- [x] Hero Leaderboard
+- [x] All Costumes
+- [x] Get Costume
 - [ ] Items
 - [ ] Maps
 - [ ] Dynamic Stat data
