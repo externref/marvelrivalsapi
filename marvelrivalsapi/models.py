@@ -31,7 +31,7 @@ from datetime import datetime
 from attrs import define, field
 from pygments import formatters, highlight, lexers  # type: ignore
 
-from marvelrivalsapi.utility import LoginOS
+from marvelrivalsapi.utility import LoginOS, image
 
 __all__ = (
     "Hero",
@@ -43,6 +43,15 @@ __all__ = (
     "PlayerInfo",
     "LeaderboardPlayer",
     "HeroLeaderboard",
+    "Achievement",
+    "AchievementList",
+    "Item",
+    "ItemList",
+    "BattlePassItem",
+    "BattlePass",
+    "SubMap",
+    "Map",
+    "MapList",
 )
 
 
@@ -826,3 +835,824 @@ class CostumePremiumWrapper(Costume):
             video=data.get("video"),
             raw_dict=data.copy(),
         )
+
+
+@define(kw_only=True)
+class Achievement:
+    """
+    Represents a single achievement in Marvel Rivals.
+
+    Attributes
+    ----------
+    id : str
+        Unique identifier for the achievement (Name if not exists).
+    name : str
+        Display name of the achievement.
+    category : str
+        Category the achievement belongs to (e.g., "Combat").
+    points : int
+        Point value of the achievement.
+    icon : str
+        Path to the achievement's icon image.
+    raw_dict : dict
+        The original JSON data used to create this instance.
+    """
+
+    id: str
+    name: str
+    mission: str
+    category: str
+    points: int
+    icon: str
+    raw_dict: dict[str, typing.Any] = field(factory=dict)
+
+    @classmethod
+    def from_dict(cls, data: dict[str, typing.Any]) -> Achievement:
+        """
+        Create an Achievement instance from a dictionary.
+
+        Parameters
+        ----------
+        data : dict
+            Dictionary containing achievement data.
+
+        Returns
+        -------
+        Achievement
+            A new Achievement instance.
+        """
+        return cls(
+            id=data.get("id", data["name"]),
+            name=data["name"],
+            category=data["category"],
+            points=data["points"],
+            icon=data["icon"],
+            mission=data["mission"],
+            raw_dict=data.copy(),
+        )
+
+    @property
+    def icon_url(self) -> str:
+        """
+        Get the full URL for the achievement icon.
+
+        Returns
+        -------
+        str
+            The complete URL to the achievement icon.
+        """
+        return image(self.icon)
+
+
+@define(kw_only=True)
+class AchievementList:
+    """
+    Represents a collection of achievements in Marvel Rivals.
+
+    Attributes
+    ----------
+    total_achievements : int
+        Total number of achievements available.
+    achievements : list[Achievement]
+        List of achievements.
+    raw_dict : dict
+        The original JSON data used to create this instance.
+    """
+
+    total_achievements: int
+    achievements: list[Achievement] = field(factory=list)
+    raw_dict: dict[str, typing.Any] = field(factory=dict)
+
+    @classmethod
+    def from_dict(cls, data: dict[str, typing.Any]) -> AchievementList:
+        """
+        Create an AchievementList instance from a dictionary.
+
+        Parameters
+        ----------
+        data : dict
+            Dictionary containing achievement list data.
+
+        Returns
+        -------
+        AchievementList
+            A new AchievementList instance.
+        """
+        return cls(
+            total_achievements=data["total_achievements"],
+            achievements=[
+                Achievement.from_dict(achievement)
+                for achievement in data.get("achievements", [])
+            ],
+            raw_dict=data.copy(),
+        )
+
+    def filter_by_category(self, category: str) -> list[Achievement]:
+        """
+        Filter achievements by category.
+
+        Parameters
+        ----------
+        category : str
+            The category to filter by.
+
+        Returns
+        -------
+        list[Achievement]
+            List of achievements in the specified category.
+        """
+        return [a for a in self.achievements if a.category.lower() == category.lower()]
+
+    def get_achievement(self, achievement_id: str) -> Achievement | None:
+        """
+        Get an achievement by its ID.
+
+        Parameters
+        ----------
+        achievement_id : str
+            The achievement ID to look for.
+
+        Returns
+        -------
+        Achievement | None
+            The achievement if found, None otherwise.
+        """
+        for achievement in self.achievements:
+            if achievement.id == achievement_id:
+                return achievement
+        return None
+
+    def get_total_points(self) -> int:
+        """
+        Calculate the total points value of all achievements.
+
+        Returns
+        -------
+        int
+            Sum of points for all achievements.
+        """
+        return sum(achievement.points for achievement in self.achievements)
+
+
+@define(kw_only=True)
+class Item(Model):
+    """
+    Represents a collectible item in Marvel Rivals.
+
+    Attributes
+    ----------
+    id : str
+        Unique identifier for the item.
+    name : str
+        Display name of the item.
+    quality : str
+        Rarity/quality level of the item (e.g., "BLUE").
+    type : str
+        Type of the item (e.g., "Nameplate").
+    associated_hero : str
+        ID of the associated hero, or "0" if not hero-specific.
+    slug : str
+        URL-friendly identifier for the item.
+    description : str | None
+        Description of the item, if available.
+    icon : str
+        Path to the item's icon image.
+    raw_dict : dict
+        The original JSON data used to create this instance.
+    """
+
+    id: str
+    name: str
+    quality: str
+    type: str
+    associated_hero: str
+    slug: str
+    description: str | None
+    icon: str
+    raw_dict: dict[str, typing.Any] = field(factory=dict)
+
+    @classmethod
+    def from_dict(cls, data: dict[str, typing.Any]) -> Item:
+        """
+        Create an Item instance from a dictionary.
+
+        Parameters
+        ----------
+        data : dict
+            Dictionary containing item data.
+
+        Returns
+        -------
+        Item
+            A new Item instance.
+        """
+        return cls(
+            id=data["id"],
+            name=data["name"],
+            quality=data["quality"],
+            type=data["type"],
+            associated_hero=data["associated_hero"],
+            slug=data["slug"],
+            description=data.get("description"),
+            icon=data["icon"],
+            raw_dict=data.copy(),
+        )
+
+    @property
+    def icon_url(self) -> str:
+        """
+        Get the full URL for the item icon.
+
+        Returns
+        -------
+        str
+            The complete URL to the item icon.
+        """
+        return image(self.icon)
+
+    @property
+    def is_hero_specific(self) -> bool:
+        """
+        Check if the item is associated with a specific hero.
+
+        Returns
+        -------
+        bool
+            True if the item is associated with a specific hero, False otherwise.
+        """
+        return self.associated_hero != "0"
+
+
+@define(kw_only=True)
+class ItemList(Model):
+    """
+    Represents a collection of items in Marvel Rivals.
+
+    Attributes
+    ----------
+    total_items : int
+        Total number of items available.
+    items : list[Item]
+        List of items.
+    raw_dict : dict
+        The original JSON data used to create this instance.
+    """
+
+    total_items: int
+    items: list[Item] = field(factory=list)
+    raw_dict: dict[str, typing.Any] = field(factory=dict)
+
+    @classmethod
+    def from_dict(cls, data: dict[str, typing.Any]) -> ItemList:
+        """
+        Create an ItemList instance from a dictionary.
+
+        Parameters
+        ----------
+        data : dict
+            Dictionary containing item list data.
+
+        Returns
+        -------
+        ItemList
+            A new ItemList instance.
+        """
+        return cls(
+            total_items=data["total_items"],
+            items=[Item.from_dict(item) for item in data.get("items", [])],
+            raw_dict=data.copy(),
+        )
+
+    def filter_by_type(self, item_type: str) -> list[Item]:
+        """
+        Filter items by type.
+
+        Parameters
+        ----------
+        item_type : str
+            The item type to filter by.
+
+        Returns
+        -------
+        list[Item]
+            List of items of the specified type.
+        """
+        return [item for item in self.items if item.type.lower() == item_type.lower()]
+
+    def filter_by_quality(self, quality: str) -> list[Item]:
+        """
+        Filter items by quality/rarity.
+
+        Parameters
+        ----------
+        quality : str
+            The quality to filter by.
+
+        Returns
+        -------
+        list[Item]
+            List of items with the specified quality.
+        """
+        return [item for item in self.items if item.quality.lower() == quality.lower()]
+
+    def filter_by_hero(self, hero_id: str) -> list[Item]:
+        """
+        Filter items by associated hero.
+
+        Parameters
+        ----------
+        hero_id : str
+            The hero ID to filter by.
+
+        Returns
+        -------
+        list[Item]
+            List of items associated with the specified hero.
+        """
+        return [item for item in self.items if item.associated_hero == hero_id]
+
+    def get_item(self, item_id: str) -> Item | None:
+        """
+        Get an item by its ID.
+
+        Parameters
+        ----------
+        item_id : str
+            The item ID to look for.
+
+        Returns
+        -------
+        Item | None
+            The item if found, None otherwise.
+        """
+        for item in self.items:
+            if item.id == item_id:
+                return item
+        return None
+
+    def get_item_by_slug(self, slug: str) -> Item | None:
+        """
+        Get an item by its slug.
+
+        Parameters
+        ----------
+        slug : str
+            The item slug to look for.
+
+        Returns
+        -------
+        Item | None
+            The item if found, None otherwise.
+        """
+        for item in self.items:
+            if item.slug == slug:
+                return item
+        return None
+
+
+@define(kw_only=True)
+class BattlePassItem(Model):
+    """
+    Represents an item in the Battle Pass.
+
+    Attributes
+    ----------
+    name : str
+        Name of the Battle Pass item.
+    image : str
+        Path to the item's image.
+    cost : str
+        Cost to unlock the item (e.g., "Unlock To Claim").
+    isLuxury : bool
+        Whether this is a premium/luxury tier item.
+    raw_dict : dict
+        The original JSON data used to create this instance.
+    """
+
+    name: str
+    image: str
+    cost: str
+    isLuxury: bool
+    raw_dict: dict[str, typing.Any] = field(factory=dict)
+
+    @classmethod
+    def from_dict(cls, data: dict[str, typing.Any]) -> BattlePassItem:
+        """
+        Create a BattlePassItem instance from a dictionary.
+
+        Parameters
+        ----------
+        data : dict
+            Dictionary containing Battle Pass item data.
+
+        Returns
+        -------
+        BattlePassItem
+            A new BattlePassItem instance.
+        """
+        return cls(
+            name=data["name"],
+            image=data["image"],
+            cost=data["cost"],
+            isLuxury=data["isLuxury"],
+            raw_dict=data.copy(),
+        )
+
+    @property
+    def image_url(self) -> str:
+        """
+        Get the full URL for the item image.
+
+        Returns
+        -------
+        str
+            The complete URL to the item image.
+        """
+        return image(self.image)
+
+
+@define(kw_only=True)
+class BattlePass(Model):
+    """
+    Represents a Battle Pass season in Marvel Rivals.
+
+    Attributes
+    ----------
+    season : int
+        Battle Pass season number.
+    season_name : str
+        Name of the Battle Pass season.
+    items : list[BattlePassItem]
+        Items available in the Battle Pass.
+    raw_dict : dict
+        The original JSON data used to create this instance.
+    """
+
+    season: int
+    season_name: str
+    items: list[BattlePassItem] = field(factory=list)
+    raw_dict: dict[str, typing.Any] = field(factory=dict)
+
+    @classmethod
+    def from_dict(cls, data: dict[str, typing.Any]) -> BattlePass:
+        """
+        Create a BattlePass instance from a dictionary.
+
+        Parameters
+        ----------
+        data : dict
+            Dictionary containing Battle Pass data.
+
+        Returns
+        -------
+        BattlePass
+            A new BattlePass instance.
+        """
+        return cls(
+            season=data["season"],
+            season_name=data["season_name"],
+            items=[BattlePassItem.from_dict(item) for item in data.get("items", [])],
+            raw_dict=data.copy(),
+        )
+
+    def get_free_items(self) -> list[BattlePassItem]:
+        """
+        Get all free (non-luxury) items in the Battle Pass.
+
+        Returns
+        -------
+        list[BattlePassItem]
+            List of free items.
+        """
+        return [item for item in self.items if not item.isLuxury]
+
+    def get_premium_items(self) -> list[BattlePassItem]:
+        """
+        Get all premium (luxury) items in the Battle Pass.
+
+        Returns
+        -------
+        list[BattlePassItem]
+            List of premium items.
+        """
+        return [item for item in self.items if item.isLuxury]
+
+    def find_item(self, name: str) -> BattlePassItem | None:
+        """
+        Find a Battle Pass item by name.
+
+        Parameters
+        ----------
+        name : str
+            The item name to search for.
+
+        Returns
+        -------
+        BattlePassItem | None
+            The matching item if found, None otherwise.
+        """
+        for item in self.items:
+            if item.name.lower() == name.lower():
+                return item
+        return None
+
+
+@define(kw_only=True)
+class SubMap(Model):
+    """
+    Represents a sub-map within a main map in Marvel Rivals.
+
+    Attributes
+    ----------
+    id : int
+        Unique identifier for the sub-map.
+    name : str | None
+        Name of the sub-map, if available.
+    thumbnail : str | None
+        Path to the sub-map's thumbnail image, if available.
+    raw_dict : dict
+        The original JSON data used to create this instance.
+    """
+    id: int
+    name: str | None = None
+    thumbnail: str | None = None
+    raw_dict: dict[str, typing.Any] = field(factory=dict)
+
+    @classmethod
+    def from_dict(cls, data: dict[str, typing.Any]) -> SubMap:
+        """
+        Create a SubMap instance from a dictionary.
+
+        Parameters
+        ----------
+        data : dict
+            Dictionary containing sub-map data.
+
+        Returns
+        -------
+        SubMap
+            A new SubMap instance.
+        """
+        return cls(
+            id=data["id"],
+            name=data.get("name"),
+            thumbnail=data.get("thumbnail"),
+            raw_dict=data.copy(),
+        )
+
+
+@define(kw_only=True)
+class Map(Model):
+    """
+    Represents a game map in Marvel Rivals.
+
+    Attributes
+    ----------
+    id : int
+        Unique identifier for the map.
+    name : str
+        Short name of the map.
+    full_name : str
+        Complete name of the map including location.
+    location : str
+        Location/realm where the map is set.
+    description : str
+        Lore description of the map.
+    game_mode : str
+        Game mode associated with this map (e.g., "Convoy", "Convergence").
+    is_competitive : bool
+        Whether the map is available in competitive play.
+    sub_map : SubMap
+        Information about sub-areas within the map.
+    video : str
+        URL to a video showcase of the map.
+    images : list[str]
+        List of image paths for the map in different sizes.
+    raw_dict : dict
+        The original JSON data used to create this instance.
+    """
+    id: int
+    name: str
+    full_name: str
+    location: str
+    description: str
+    game_mode: str
+    is_competitive: bool
+    sub_map: SubMap
+    video: str
+    images: list[str] = field(factory=list)
+    raw_dict: dict[str, typing.Any] = field(factory=dict)
+
+    @classmethod
+    def from_dict(cls, data: dict[str, typing.Any]) -> Map:
+        """
+        Create a Map instance from a dictionary.
+
+        Parameters
+        ----------
+        data : dict
+            Dictionary containing map data.
+
+        Returns
+        -------
+        Map
+            A new Map instance.
+        """
+        return cls(
+            id=data["id"],
+            name=data["name"],
+            full_name=data["full_name"],
+            location=data["location"],
+            description=data.get("description", "Not provided"),
+            game_mode=data["game_mode"],
+            is_competitive=data.get("is_competitive", False),
+            sub_map=SubMap.from_dict(data["sub_map"]),
+            video=data["video"],
+            images=data.get("images", []),
+            raw_dict=data.copy(),
+        )
+
+    @property
+    def thumbnail_url(self) -> str | None:
+        """
+        Get the URL for the map's thumbnail image.
+
+        Returns
+        -------
+        str | None
+            The URL to the map's thumbnail image, or None if not available.
+        """
+        if not self.images:
+            return None
+        return image(self.images[0])
+
+    @property
+    def medium_image_url(self) -> str | None:
+        """
+        Get the URL for the map's medium-sized image.
+
+        Returns
+        -------
+        str | None
+            The URL to the map's medium image, or None if not available.
+        """
+        if len(self.images) < 2:
+            return self.thumbnail_url
+        return image(self.images[1])
+
+    @property
+    def large_image_url(self) -> str | None:
+        """
+        Get the URL for the map's large-sized image.
+
+        Returns
+        -------
+        str | None
+            The URL to the map's large image, or None if not available.
+        """
+        if len(self.images) < 3:
+            return self.medium_image_url
+        return image(self.images[2])
+
+    @property
+    def video_id(self) -> str | None:
+        """
+        Extract the YouTube video ID from the video URL.
+
+        Returns
+        -------
+        str | None
+            The YouTube video ID if the URL is a YouTube link, None otherwise.
+        """
+        if not self.video or "youtu" not in self.video:
+            return None
+
+        if "youtube.com/watch" in self.video:
+            import re
+            pattern = r"v=([a-zA-Z0-9_-]+)"
+            match = re.search(pattern, self.video)
+            return match.group(1) if match else None
+        elif "youtu.be/" in self.video:
+            return self.video.split("youtu.be/")[1].split("?")[0]
+        return None
+
+
+@define(kw_only=True)
+class MapList(Model):
+    """
+    Represents a collection of maps in Marvel Rivals.
+
+    Attributes
+    ----------
+    total_maps : int
+        Total number of maps available.
+    maps : list[Map]
+        List of maps.
+    raw_dict : dict
+        The original JSON data used to create this instance.
+    """
+    total_maps: int
+    maps: list[Map] = field(factory=list)
+    raw_dict: dict[str, typing.Any] = field(factory=dict)
+
+    @classmethod
+    def from_dict(cls, data: dict[str, typing.Any]) -> MapList:
+        """
+        Create a MapList instance from a dictionary.
+
+        Parameters
+        ----------
+        data : dict
+            Dictionary containing map list data.
+
+        Returns
+        -------
+        MapList
+            A new MapList instance.
+        """
+        return cls(
+            total_maps=data["total_maps"],
+            maps=[Map.from_dict(map_data) for map_data in data.get("maps", [])],
+            raw_dict=data.copy(),
+        )
+
+    def filter_by_game_mode(self, game_mode: str) -> list[Map]:
+        """
+        Filter maps by game mode.
+
+        Parameters
+        ----------
+        game_mode : str
+            The game mode to filter by (e.g., "Convoy", "Convergence").
+
+        Returns
+        -------
+        list[Map]
+            List of maps with the specified game mode.
+        """
+        return [map for map in self.maps if map.game_mode.lower() == game_mode.lower()]
+
+    def filter_by_location(self, location: str) -> list[Map]:
+        """
+        Filter maps by location.
+
+        Parameters
+        ----------
+        location : str
+            The location to filter by (e.g., "Yggsgard", "Tokyo 2099").
+
+        Returns
+        -------
+        list[Map]
+            List of maps in the specified location.
+        """
+        return [map for map in self.maps if map.location.lower() == location.lower()]
+
+    def get_competitive_maps(self) -> list[Map]:
+        """
+        Get all maps that are available in competitive play.
+
+        Returns
+        -------
+        list[Map]
+            List of competitive maps.
+        """
+        return [map for map in self.maps if map.is_competitive]
+
+    def get_map(self, map_id: int) -> Map | None:
+        """
+        Get a map by its ID.
+
+        Parameters
+        ----------
+        map_id : int
+            The map ID to look for.
+
+        Returns
+        -------
+        Map | None
+            The map if found, None otherwise.
+        """
+        for map in self.maps:
+            if map.id == map_id:
+                return map
+        return None
+
+    def get_map_by_name(self, name: str) -> Map | None:
+        """
+        Get a map by its name.
+
+        Parameters
+        ----------
+        name : str
+            The map name to look for.
+
+        Returns
+        -------
+        Map | None
+            The map if found, None otherwise.
+        """
+        for map in self.maps:
+            if map.name.lower() == name.lower():
+                return map
+        return None

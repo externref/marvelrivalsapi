@@ -24,6 +24,7 @@ SOFTWARE.
 
 from __future__ import annotations
 
+import json
 import typing
 from enum import Enum, IntEnum
 
@@ -57,7 +58,7 @@ class MarvelRivalsAPIError(Exception):
         self.response = res
         try:
             message = f"{res.status_code}: {res.json()['error']}"
-        except:
+        except json.JSONDecodeError:
             message = f"{res.status_code}: {res.text}"
         super().__init__(message)
 
@@ -164,6 +165,48 @@ class Endpoints:
     )
     GET_COSTUME: typing.Callable[[str, str], str] = lambda hero_id, costume_id: (
         f"https://marvelrivalsapi.com/api/v1/heroes/hero/{hero_id}/costume/{costume_id}"
+    )
+
+    @staticmethod
+    def ALL_ACHIVEMENTS(
+        *, query: str | None = None, page: int | None = None, limit: int | None = None
+    ) -> str:
+        base_url = "https://marvelrivalsapi.com/api/v1/achievements?"
+        if query:
+            base_url += f"query={query}&"
+        if page:
+            base_url += f"page={page}&"
+        if limit:
+            base_url += f"limit={limit}&"
+        return base_url.rstrip("&")
+
+    GET_ACHIVEMENT: typing.Callable[[str], str] = lambda achivement_id: (
+        f"https://marvelrivalsapi.com/api/v1/achievement/{achivement_id}"
+    )
+
+    @staticmethod
+    def ALL_ITEMS(
+        *, query: str | None = None, page: int | None = None, limit: int | None = None
+    ) -> str:
+        base_url = "https://marvelrivalsapi.com/api/v1/items?"
+        if query:
+            base_url += f"query={query}&"
+        if page:
+            base_url += f"page={page}&"
+        if limit:
+            base_url += f"limit={limit}&"
+        return base_url.rstrip("&")
+
+    GET_ITEM: typing.Callable[[str], str] = lambda item_id: (
+        f"https://marvelrivalsapi.com/api/v1/item/{item_id}"
+    )
+
+    GET_BATTLEPASS: typing.Callable[[str], str] = lambda battlepass_id: (
+        f"https://marvelrivalsapi.com/api/v1/battlepass?season={battlepass_id}"
+    )
+
+    ALL_MAPS: typing.Callable[[int, int], str]= lambda page, limit: (
+        "https://marvelrivalsapi.com/api/v1/maps?page={page}&limit={limit}"
     )
 
 

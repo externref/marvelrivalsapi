@@ -29,8 +29,9 @@ import typing
 import httpx
 from attrs import define, field
 
-from marvelrivalsapi.models import (Costume, CostumePremiumWrapper, Hero,
-                                    HeroLeaderboard, HeroStat)
+from marvelrivalsapi.models import (Achievement, AchievementList, BattlePass,
+                                    Costume, CostumePremiumWrapper, Hero,
+                                    HeroLeaderboard, HeroStat, Item, ItemList)
 from marvelrivalsapi.utility import Endpoints, Heroes, MarvelRivalsAPIError
 
 __all__ = ("AsyncMarvelRivalsClient",)
@@ -48,6 +49,8 @@ class AsyncMarvelRivalsClient:
     ----------
     api_key : str
         The API key to authenticate requests to the Marvel Rivals API.
+    error : bool
+        If True, raises an error on failure instead of returning None (Defaults to False).
 
     Attributes
     ----------
@@ -69,6 +72,7 @@ class AsyncMarvelRivalsClient:
     """
 
     api_key: str
+    error: bool = field(default=False)
     client: httpx.AsyncClient = field(init=False)
 
     def __attrs_post_init__(self) -> None:
@@ -76,6 +80,14 @@ class AsyncMarvelRivalsClient:
 
     def throw(self, res: httpx.Response) -> typing.NoReturn:
         raise MarvelRivalsAPIError(res)
+
+    async def _handle_error(
+        self, response: httpx.Response, error: bool | None
+    ) -> typing.NoReturn | None:
+        should_raise = error if error is not None else self.error
+        if should_raise:
+            self.throw(response)
+        return None
 
     @typing.overload
     async def get_hero(self, hero: str | Heroes, *, error: bool) -> Hero: ...
@@ -93,17 +105,17 @@ class AsyncMarvelRivalsClient:
             The hero name or ID to retrieve.
         error : bool
             If True, raises an error on failure instead of returning None.
-            Default is False.
+            The method will also error if the client's error attribute is True.
 
         Returns
         -------
         Hero | None
-            The hero if found, None if not found and error is False.
+            The hero if found, None if not found and neither error parameters are True.
 
         Raises
         ------
         MarvelRivalsAPIError
-            When the API request fails and error is True.
+            When the API request fails and either error parameter is True.
 
         Examples
         --------
@@ -117,7 +129,7 @@ class AsyncMarvelRivalsClient:
         )
         if response.status_code == 200:
             return Hero.from_dict(response.json())
-        return None if not error else self.throw(response)
+        return await self._handle_error(response, error)
 
     @typing.overload
     async def get_all_heroes(self, *, error: bool) -> list[Hero]: ...
@@ -133,7 +145,6 @@ class AsyncMarvelRivalsClient:
         ----------
         error : bool
             If True, raises an error on failure instead of returning None.
-            Default is False.
 
         Returns
         -------
@@ -156,7 +167,7 @@ class AsyncMarvelRivalsClient:
         response = await self.client.get(Endpoints.ALL_HEROES())
         if response.status_code == 200:
             return [Hero.from_dict(hero) for hero in response.json()]
-        return None if not error else self.throw(response)
+        return await self._handle_error(response, error)
 
     @typing.overload
     async def get_hero_stats(self, hero: str | Heroes, *, error: bool) -> HeroStat: ...
@@ -176,7 +187,6 @@ class AsyncMarvelRivalsClient:
             The hero name or ID to retrieve stats for.
         error : bool
             If True, raises an error on failure instead of returning None.
-            Default is False.
 
         Returns
         -------
@@ -200,7 +210,7 @@ class AsyncMarvelRivalsClient:
         )
         if response.status_code == 200:
             return HeroStat.from_dict(response.json())
-        return None if not error else self.throw(response)
+        return await self._handle_error(response, error)
 
     @typing.overload
     async def get_hero_leaderboard(
@@ -236,7 +246,6 @@ class AsyncMarvelRivalsClient:
             The platform to filter the leaderboard by.
         error : bool
             If True, raises an error on failure instead of returning None.
-            Default is False.
 
         Returns
         -------
@@ -263,7 +272,7 @@ class AsyncMarvelRivalsClient:
         )
         if response.status_code == 200:
             return HeroLeaderboard.from_dict(response.json())
-        return None if not error else self.throw(response)
+        return await self._handle_error(response, error)
 
     @typing.overload
     async def get_hero_costumes(
@@ -285,7 +294,6 @@ class AsyncMarvelRivalsClient:
             The hero name or ID to retrieve costumes for.
         error : bool
             If True, raises an error on failure instead of returning None.
-            Default is False.
 
         Returns
         -------
@@ -310,7 +318,7 @@ class AsyncMarvelRivalsClient:
         )
         if response.status_code == 200:
             return [Costume.from_dict(costume) for costume in response.json()]
-        return None if not error else self.throw(response)
+        return await self._handle_error(response, error)
 
     @typing.overload
     async def get_costume(
@@ -336,7 +344,6 @@ class AsyncMarvelRivalsClient:
             The ID of the costume to retrieve.
         error : bool
             If True, raises an error on failure instead of returning None.
-            Default is False.
 
         Returns
         -------
@@ -362,7 +369,269 @@ class AsyncMarvelRivalsClient:
         )
         if response.status_code == 200:
             return CostumePremiumWrapper.from_dict(response.json())
-        return None if not error else self.throw(response)
+        return await self._handle_error(response, error)
+
+    @typing.overload
+    async def get_all_achievements(
+        self, *, query: str, page: int | None, limit: int | None, error: bool = False
+    ) -> AchievementList: ...
+
+    @typing.overload
+    async def get_all_achievements(
+        self,
+        *,
+        query: str | None = None,
+        page: int | None = None,
+        limit: int | None = None,
+    ) -> AchievementList | None: ...
+
+    @typing.overload
+    async def get_all_achievements(self, *, error: bool) -> AchievementList | None: ...
+
+    async def get_all_achievements(
+        self,
+        *,
+        query: str | None = None,
+        page: int | None = None,
+        limit: int | None = None,
+        error: bool = False,
+    ) -> AchievementList | None:
+        """
+        Get all achievements.
+
+        Parameters
+        ----------
+        query : str | None
+            The query string to filter achievements by name.
+        page : int | None
+            The page number for pagination.
+        limit : int | None
+            The number of achievements to return per page.
+
+        Returns
+        -------
+        AchievementList | None
+            A list of all achievements if successful, None if the request fails.
+
+        Raises
+        ------
+        MarvelRivalsAPIError
+            When the API request fails and error is True.
+
+        Examples
+        --------
+        >>> client = MarvelRivalsClient("your-api-key")
+        >>> achievements = client.get_all_achievements()
+        >>> if achievements:
+        ...     for achievement in achievements:
+        ...         print(achievement.name)
+        """
+
+        response = await self.client.get(
+            Endpoints.ALL_ACHIVEMENTS(query=query, page=page, limit=limit)
+        )
+
+        if response.status_code == 200:
+            return AchievementList.from_dict(response.json())
+
+        return await self._handle_error(response, error)
+
+    @typing.overload
+    async def get_achievement(
+        self, achievement: str, *, error: bool
+    ) -> Achievement: ...
+
+    @typing.overload
+    async def get_achievement(self, achievement: str) -> Achievement | None: ...
+
+    async def get_achievement(
+        self, achievement: str, *, error: bool = False
+    ) -> Achievement | None:
+        """
+        Get a specific achievement by Name.
+
+        Parameters
+        ----------
+        achievement : str
+            The name of the achievement to retrieve.
+
+        Returns
+        -------
+        Achievement | None
+            The achievement if found, None if not found.
+
+        Raises
+        ------
+        MarvelRivalsAPIError
+            When the API request fails and error is True.
+
+        Examples
+        --------
+        >>> client = MarvelRivalsClient("your-api-key")
+        >>> achievement = client.get_achievement("some-achievement-name")
+        >>> if achievement:
+        ...     print(achievement.name)
+        """
+
+        response = await self.client.get(Endpoints.GET_ACHIVEMENT(achievement))
+
+        if response.status_code == 200:
+            return Achievement.from_dict(response.json())
+
+        return await self._handle_error(response, error)
+
+    @typing.overload
+    async def get_all_items(
+        self, *, query: str, page: int | None, limit: int | None, error: bool = True
+    ) -> ItemList: ...
+
+    @typing.overload
+    async def get_all_items(self, *, error: bool) -> ItemList: ...
+
+    @typing.overload
+    async def get_all_items(
+        self,
+        *,
+        query: str | None = None,
+        page: int | None = None,
+        limit: int | None = None,
+    ) -> ItemList | None: ...
+
+    async def get_all_items(
+        self,
+        *,
+        query: str | None = None,
+        page: int | None = None,
+        limit: int | None = None,
+        error: bool = False,
+    ) -> ItemList | None:
+        """
+        Get all items.
+
+        Parameters
+        ----------
+        query : str | None
+            The query string to filter items by name.
+        page : int | None
+            The page number for pagination.
+        limit : int | None
+            The number of items to return per page.
+        error : bool | None
+            If True, raises an error on failure instead of returning None.
+
+        Returns
+        -------
+        ItemList | None
+            A list of all items if successful, None if the request fails.
+
+        Raises
+        ------
+        MarvelRivalsAPIError
+            When the API request fails and error is True.
+
+        Examples
+        --------
+        >>> client = MarvelRivalsClient("your-api-key")
+        >>> items = client.get_all_items()
+        >>> if items:
+        ...     for item in items:
+        ...         print(item.name)
+        """
+
+        response = await self.client.get(
+            Endpoints.ALL_ITEMS(query=query, page=page, limit=limit)
+        )
+
+        if response.status_code == 200:
+            return ItemList.from_dict(response.json())
+
+        return await self._handle_error(response, error)
+
+    @typing.overload
+    async def get_item(self, item: str, *, error: bool) -> Item: ...
+
+    @typing.overload
+    async def get_item(self, item: str) -> Item | None: ...
+
+    async def get_item(self, item: str, *, error: bool = False) -> Item | None:
+        """
+        Get a specific item by ID.
+
+        Parameters
+        ----------
+        item : str
+            The ID of the item to retrieve.
+        error : bool | None
+            If True, raises an error on failure instead of returning None.
+
+        Returns
+        -------
+        Item | None
+            The item if found, None if not found.
+
+        Raises
+        ------
+        MarvelRivalsAPIError
+            When the API request fails and error is True.
+
+        Examples
+        --------
+        >>> client = MarvelRivalsClient("your-api-key")
+        >>> item = client.get_item("some-item-name")
+        >>> if item:
+        ...     print(item.name)
+        """
+
+        response = await self.client.get(Endpoints.GET_ITEM(item))
+
+        if response.status_code == 200:
+            return Item.from_dict(response.json())
+
+        return await self._handle_error(response, error)
+
+    @typing.overload
+    async def get_battlepass(self, season: float, *, error: bool) -> BattlePass: ...
+
+    @typing.overload
+    async def get_battlepass(self, season: float) -> BattlePass | None: ...
+
+    async def get_battlepass(
+        self, season: float, *, error: bool = False
+    ) -> BattlePass | None:
+        """
+        Get a specific battlepass by season asynchronously.
+
+        Parameters
+        ----------
+        season : float
+            The season of the battlepass to retrieve.
+        error : bool
+            If True, raises an error on failure instead of returning None.
+            The method will also error if the client's error attribute is True.
+
+        Returns
+        -------
+        BattlePass | None
+            The battlepass if found, None if not found and neither error parameters are True.
+
+        Raises
+        ------
+        MarvelRivalsAPIError
+            When the API request fails and either error parameter is True.
+
+        Examples
+        --------
+        >>> async with AsyncMarvelRivalsClient("your-api-key") as client:
+        ...     battlepass = await client.get_battlepass(1.0)
+        ...     if battlepass:
+        ...         print(battlepass.season_name)
+        """
+        response = await self.client.get(Endpoints.GET_BATTLEPASS(str(season)))
+
+        if response.status_code == 200:
+            return BattlePass.from_dict(response.json())
+
+        return await self._handle_error(response, error)
 
     async def close(self) -> None:
         """
