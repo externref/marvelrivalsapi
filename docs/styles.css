@@ -85,6 +85,10 @@
     border-radius: var(--base-border-radius);
   }
 
-img {
+.rounded {
     border-radius: var(--base-border-radius);
+}
+
+body {
+  zoom: 0.8;
 }

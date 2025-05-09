@@ -13,6 +13,7 @@ nav:
     - Heroes: api/heroes.md
     - Players: api/players.md
     - Utility: api/utility.md
+    - Items and Maps: api/items_maps.md
 
 theme:
   name: "material"
