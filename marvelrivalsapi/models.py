@@ -1373,6 +1373,7 @@ class SubMap(Model):
     raw_dict : dict
         The original JSON data used to create this instance.
     """
+
     id: int
     name: str | None = None
     thumbnail: str | None = None
@@ -1431,6 +1432,7 @@ class Map(Model):
     raw_dict : dict
         The original JSON data used to create this instance.
     """
+
     id: int
     name: str
     full_name: str
@@ -1529,6 +1531,7 @@ class Map(Model):
 
         if "youtube.com/watch" in self.video:
             import re
+
             pattern = r"v=([a-zA-Z0-9_-]+)"
             match = re.search(pattern, self.video)
             return match.group(1) if match else None
@@ -1551,6 +1554,7 @@ class MapList(Model):
     raw_dict : dict
         The original JSON data used to create this instance.
     """
+
     total_maps: int
     maps: list[Map] = field(factory=list)
     raw_dict: dict[str, typing.Any] = field(factory=dict)

@@ -31,7 +31,8 @@ from attrs import define, field
 
 from marvelrivalsapi.models import (Achievement, AchievementList, BattlePass,
                                     Costume, CostumePremiumWrapper, Hero,
-                                    HeroLeaderboard, HeroStat, Item, ItemList, MapList)
+                                    HeroLeaderboard, HeroStat, Item, ItemList,
+                                    MapList)
 from marvelrivalsapi.utility import Endpoints, Heroes, MarvelRivalsAPIError
 
 __all__ = ("MarvelRivalsClient",)
@@ -619,8 +620,10 @@ class MarvelRivalsClient:
             return BattlePass.from_dict(response.json())
 
         return self._handle_error(response, error)
-    
-    def get_all_maps(self, page: int = 1, limit: int = 0, error: bool | None = None ) -> MapList | None:
+
+    def get_all_maps(
+        self, page: int = 1, limit: int = 0, error: bool | None = None
+    ) -> MapList | None:
         """
         Get all maps.
 
@@ -651,7 +654,7 @@ class MarvelRivalsClient:
         ...     for map in maps:
         ...         print(map.name)
         """
-        
+
         response = self.client.get(Endpoints.ALL_MAPS(page, limit))
 
         if response.status_code == 200:

@@ -205,7 +205,7 @@ class Endpoints:
         f"https://marvelrivalsapi.com/api/v1/battlepass?season={battlepass_id}"
     )
 
-    ALL_MAPS: typing.Callable[[int, int], str]= lambda page, limit: (
+    ALL_MAPS: typing.Callable[[int, int], str] = lambda page, limit: (
         "https://marvelrivalsapi.com/api/v1/maps?page={page}&limit={limit}"
     )
 

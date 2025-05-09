@@ -56,10 +56,12 @@ def get_item(session: nox.Session) -> None:
     item = client.get_item("30000001")
     assert item is not None, "Failed to get item"
 
+
 @nox.session(venv_backend="none")
 def get_battlepass(session: nox.Session) -> None:
     battlepass = client.get_battlepass(0)
     assert battlepass is not None, "Failed to get battlepass"
+
 
 @nox.session(venv_backend="none")
 def get_all_maps(session: nox.Session) -> None:
